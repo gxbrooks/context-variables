@@ -1,0 +1,53 @@
+_comment: "Minimal example \u2014 real projects keep variables.yaml in the consuming\
+  \ repo (e.g. spark-observability/vars/)."
+K8S_KVA_HELM_REPO:
+  section: Kubernetes cluster registry
+  value: https://install.service-now.com/glide/distribution/builds/package/informer/informer-helm/repo
+  contexts:
+  - service-now
+K8S_CLUSTERS:
+  section: Kubernetes cluster registry
+  value:
+  - name: brooks-lab
+    location: brooks-lab
+    location_full_name: Brooks Lab
+    kva_informer: true
+    dynatrace: true
+    api_url: https://192.168.1.207:6443
+    kva_namespace: servicenow-kva
+    environment: on-prem
+  - name: aks-otel-demo
+    location: bradens-cloud
+    location_full_name: Braden Cloud Demo
+    environment: azure
+    cloud_provider: azure
+  contexts:
+  - service-now
+  - dynatrace-ansible
+K8S_NAMESPACE:
+  section: Kubernetes cluster registry
+  value: spark
+  contexts:
+  - spark-ansible
+DOCKER_HOSTS:
+  section: Docker host registry
+  value:
+  - name: lab3-observability
+    location: brooks-lab
+    location_full_name: Brooks Lab
+    discovery_docker_pattern: true
+    container_discovery: true
+    cmdb_host_name: lab3
+    ansible_host: Lab3
+    compose_dir: observability
+    description: Lab3 observability Docker Compose stack (ES, Kibana, Grafana, Prometheus,
+      OTel, Logstash, Tempo)
+  contexts:
+  - service-now
+NFS_SERVER:
+  section: NFS
+  value: Lab3.lan
+  contexts:
+  - spark-runtime
+  - nfs
+  - devops

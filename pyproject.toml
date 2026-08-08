@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "context-variables"
+version = "0.1.0"
+description = "Generate context-specific configuration files from variables.yaml / contexts.yaml"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Gary Brooks" }]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+generate-contexts = "context_variables.cli:main_generate"
+vars-grid = "context_variables.cli:main_grid"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

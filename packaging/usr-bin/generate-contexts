@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+PREFIX="${CONTEXT_VARIABLES_HOME:-/opt/context-variables}"
+BIN="${PREFIX}/.venv/bin/generate-contexts"
+if [ ! -x "${BIN}" ]; then
+  echo "generate-contexts: runtime not installed at ${BIN}" >&2
+  exit 1
+fi
+export CONTEXT_VARIABLES_HOME="${PREFIX}"
+exec "${BIN}" "$@"

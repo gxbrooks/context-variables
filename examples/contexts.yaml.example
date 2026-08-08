@@ -1,0 +1,81 @@
+# Context specification — output formats and paths for vars/variables.yaml
+#
+# Each context:
+#   name:        unique identifier (must match contexts: tags in variables.yaml)
+#   type:        docker-env | shell_env | toml | configmap | ansible_vars | systemd_env
+#   output:      filename under vars/contexts/ (flattened; no subdirectories)
+#   description: purpose (environment-agnostic)
+#
+# Ansible contexts: variables are selected solely by context tags in variables.yaml.
+# Application-specific naming (e.g. snake_case) belongs in playbook/role vars, not here.
+
+contexts:
+  - name: observability
+    type: docker-env
+    output: observability_docker.env
+    description: Docker Compose environment for the Elastic/Grafana observability stack
+
+  - name: spark-image
+    type: toml
+    output: spark-image.toml
+    description: Build-time configuration for Spark Docker images
+
+  - name: spark-runtime
+    type: configmap
+    output: spark-configmap.yaml
+    description: Kubernetes ConfigMap for Spark runtime environment variables
+
+  - name: spark-ansible
+    type: ansible_vars
+    output: spark_ansible_vars.yml
+    description: Ansible variables for Spark and Hadoop deployment playbooks
+
+  - name: dynatrace-ansible
+    type: ansible_vars
+    output: dynatrace_ansible_vars.yml
+    description: Ansible variables for Dynatrace observability playbooks
+
+  - name: elastic-observability-ansible
+    type: ansible_vars
+    output: elastic_observability_ansible_vars.yml
+    description: Ansible variables for Elastic/Grafana observability stack playbooks
+
+  - name: nfs
+    type: ansible_vars
+    output: nfs_ansible_vars.yml
+    description: Ansible variables for NFS server configuration
+
+  - name: spark-client
+    type: shell_env
+    output: spark_client_env.sh
+    description: Developer environment for running Spark applications locally
+
+  - name: ispark
+    type: shell_env
+    output: ispark_client_env.sh
+    description: Environment for interactive Spark (iPython) sessions
+
+  - name: elastic-agent
+    type: systemd_env
+    output: elastic_agent_env.conf
+    description: Systemd EnvironmentFile for Elastic Agent on Linux hosts
+
+  - name: elastic-agent-ansible
+    type: ansible_vars
+    output: elastic_agent_ansible_vars.yml
+    description: Ansible variables for Elastic Agent deployment playbooks
+
+  - name: devops
+    type: shell_env
+    output: devops_env.sh
+    description: Devops client environment (Python, Java, OTEL)
+
+  - name: service-now
+    type: ansible_vars
+    output: servicenow_ansible_vars.yml
+    description: Ansible variables for ServiceNow Discovery playbooks
+
+  - name: managed-node
+    type: shell_env
+    output: managed_node_env.sh
+    description: Managed node validation environment

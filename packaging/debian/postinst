@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+PREFIX=/opt/context-variables
+WHEELS="${PREFIX}/wheels"
+
+case "$1" in
+  configure)
+    if ! python3 -c 'import ensurepip' >/dev/null 2>&1; then
+      echo "context-variables: python3 ensurepip/venv is unavailable." >&2
+      exit 1
+    fi
+    rm -rf "${PREFIX}/.venv"
+    python3 -m venv --system-site-packages "${PREFIX}/.venv"
+    "${PREFIX}/.venv/bin/pip" install --no-deps --no-index --find-links="${WHEELS}" context-variables
+    ;;
+esac
+exit 0
