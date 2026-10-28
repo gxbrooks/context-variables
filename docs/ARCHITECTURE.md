@@ -9,7 +9,7 @@ This document describes the high-level architecture of the variable context fram
 The variable context framework operates on a **two-stage generation process**:
 
 1. **Variable Definition**: All variables are defined in `vars/variables.yaml` along with the contexts (e.g., `observability`, `spark-client`, `ansible`) in which they are relevant.
-2. **Context Specification**: `vars/contexts.yaml` defines the output files to be generated for each context, specifying the output format (e.g., `.env`, `shell_env`, `toml`, `configmap`, `ansible_vars`) and the target file path.
+2. **Context Specification**: `vars/contexts.yaml` defines the output files to be generated for each context, specifying the output format (e.g., `.env`, `shell_env`, `toml`, `configmap`, `ansible_vars`, `terraform_vars`) and the target file path.
 3. **Generation**: `generate-contexts` (bootstrap wrapper) uses system Python to call `context_variables.generate`, which reads `vars/variables.yaml` and `vars/contexts.yaml` to produce context-specific configuration files in `vars/contexts/<context>/`.
 
 **Modular Design**: The `vars/` module is **independent** and uses **system Python** (not project venv) to break circular dependencies. This allows environment files to be generated before Python version is determined or virtual environment exists.
@@ -95,7 +95,7 @@ ELASTIC_URL:
 
 Contexts define:
 - **Name**: Unique context identifier
-- **Type**: Output format (env, shell_env, toml, configmap, ansible_vars)
+- **Type**: Output format (env, shell_env, toml, configmap, ansible_vars, terraform_vars)
 - **Output**: Target file path relative to repo root
 - **Description**: Purpose of the context
 
@@ -172,6 +172,17 @@ vars/
 - **Format**: TOML key-value pairs
 - **Use Case**: Docker build arguments
 - **Example**: `vars/contexts/spark-image.toml`
+
+### Terraform Variables (`.tfvars.json`)
+- **Format**: Flat JSON object, one key per variable
+- **Use Case**: `terraform plan -var-file=...` / Terraform's own
+  `*.auto.tfvars.json` auto-loading, for projects that drive the same
+  centrally-defined variables through both Ansible and Terraform
+- **Example**: `vars/contexts/dynatrace_terraform.auto.tfvars.json`
+- **Note**: variable names pass through unchanged from `variables.yaml`
+  (e.g. `DT_HOST_GROUP`), matching every other writer here -- the
+  Terraform side declares `variable "DT_HOST_GROUP" {}` to match rather
+  than this writer renaming into conventional lower_snake_case.
 
 ## Deployment Architecture
 

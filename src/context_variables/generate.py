@@ -22,6 +22,7 @@ import datetime
 import sys
 import argparse
 import re
+import json
 from pathlib import Path
 
 # Data-plane paths — set by configure(vars_dir) before generation.
@@ -48,6 +49,7 @@ WRITER_FUNCTIONS = {
     'toml': 'write_toml',
     'configmap': 'write_configmap',
     'ansible_vars': 'write_ansible_vars',
+    'terraform_vars': 'write_terraform_vars',
 }
 
 
@@ -426,6 +428,31 @@ def write_ansible_vars(vars_dict, filename, context_name='ansible', variables=No
             f.write('\n')
         return True
     except IOError as e:
+        print(f"Error writing to {filename}: {e}")
+        return False
+
+
+def write_terraform_vars(vars_dict, filename):
+    """Write variables to a Terraform .tfvars.json file.
+
+    JSON, not hand-rolled HCL: Terraform natively loads *.tfvars.json, and
+    json.dumps already gets strings/numbers/bools/lists/maps right without
+    a parallel HCL-quoting implementation to keep in sync with the other
+    writers here. Values pass through unchanged -- same vars_dict every
+    other writer gets, so a variable keeps its central variables.yaml name
+    (e.g. DT_HOST_GROUP) into the generated file; the Terraform side
+    declares `variable "DT_HOST_GROUP" {}` to match rather than this
+    writer renaming into conventional lower_snake_case. Load with
+    `terraform plan -var-file=<this file>` (or rename the output
+    `*.auto.tfvars.json` and let Terraform pick it up on its own from the
+    working directory, per contexts.yaml's output path for the context).
+    """
+    try:
+        with open(filename, 'w') as f:
+            json.dump(vars_dict, f, indent=2, sort_keys=False)
+            f.write('\n')
+        return True
+    except (IOError, TypeError) as e:
         print(f"Error writing to {filename}: {e}")
         return False
 
